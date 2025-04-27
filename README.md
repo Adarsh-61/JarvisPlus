@@ -938,7 +938,7 @@ I warmly welcome contributors to join and be a part of this project. If you have
 4. **Community Support**:
    - Answer questions in discussions
    - Share your experience with the project
-   - Spread the word about Jarvis+
+   - Spread the word about Jarvis AI
 
 ### Acknowledgments
 
