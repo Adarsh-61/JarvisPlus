@@ -5,7 +5,6 @@
 ## Demo Video
 
 - [Watch Demo Video With Audio (on YouTube)](https://youtu.be/K3sOIwlo_do?feature=shared)
-- [Download/Watch Demo Video](./screenshots/jarvisai_demo.mp4)
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -34,6 +33,8 @@ First of all, let's talk about the name "Jarvis." If you're a fan of the Iron Ma
 Jarvis AI is a powerful Artificial Intelligence (AI) assistant designed to work completely **offline** on your own computer. This means it doesn't need an internet connection to function (after the initial setup) and doesn't send your data to external servers, ensuring your privacy. It uses advanced AI models to understand language, process documents efficiently, browse the web autonomously, generate code, and much more.
 
 Building this has been a significant undertaking, and I want to express my sincere gratitude to everyone who supported me: the vibrant open-source community, my friends, dedicated mentors, and inspiring teachers. Your contributions and encouragement have been invaluable.
+
+> ⚠️ **WARNING:** This documentation has been created from the perspective of the Jarvis AI Core. The proper and complete documentation for Jarvis+ is still pending and will be added later in detail. This current documentation is only for temporary use.
 
 ---
 
