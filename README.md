@@ -126,28 +126,27 @@ Jarvis AI follows a modular architecture designed for efficiency and scalability
 ### High-Level Architecture
 ```mermaid
 graph TD
-    A[User Interface (Streamlit)] --> B[Text-To-Text Mode (Core)]
-    A --> C[Files-To-Text Mode (Core)]
+    A[Streamlit Web Interface] --> B[Text-To-Text Flow]
+    A --> C[Files-To-Text Flow]
     A --> J[Jarvis+ Agentic Layer]
-
-    B --> D[Conversation Manager (Core)]
-    C --> E[Document Processor (Core)]
-
-    E --> F[Embedding System (BGE M3)]
-    F --> G[Vector Storage (FAISS)]
-
-    D -- Core Task --> H[LLM Interface Layer]
-    G -- Core Task --> H
-    J -- Agentic Task --> H
-
-    H -- Core Pipeline --> I[Qwen 3 8B (Core LLM)]
-    H -- Agentic Pipeline --> P[DeepSeek R1 14B (Plus LLM)]
-
-    J --> K[Web Browser Agent (Plus)]
-    J --> L[Code Generation Agent (Plus)]
-    J --> M[Task Planning Agent (Plus)]
-    J --> N[Voice I/O Agent (Plus)]
-    J --> O[File Management Agent (Plus)]
+    
+    B --> D[Conversation Manager]
+    C --> E[Document Processor]
+    
+    E --> F[Embedding System]
+    F --> G[Vector Storage]
+    
+    D --> H[LLM Interface Layer]
+    G --> H
+    J --> H
+    
+    H --> I[Qwen3 8B]
+    
+    J --> K[Web Browser Agent]
+    J --> L[Code Generation Agent]
+    J --> M[Task Planning Agent]
+    J --> N[Voice I/O Agent]
+    J --> O[File Management Agent]
 ```
 
 ### Text-To-Text Pipeline
