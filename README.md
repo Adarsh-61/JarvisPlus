@@ -1,4 +1,4 @@
-Updated: 29.4.2025 | 01:10 PM
+Updated: 29.4.2025 | 01:35 PM
 ### What's New (For Jarvis AI Core)
 - Replaced DeepSeek R1 14B and Gemma 3 4B with Qwen 3 8B
 - Improved reasoning capabilities
@@ -130,8 +130,8 @@ graph TD
     A --> C[Files-To-Text Mode (Core)]
     A --> J[Jarvis+ Agentic Layer]
 
-    B --> D[Conversation Manager]
-    C --> E[Document Processor]
+    B --> D[Conversation Manager (Core)]
+    C --> E[Document Processor (Core)]
 
     E --> F[Embedding System (BGE M3)]
     F --> G[Vector Storage (FAISS)]
@@ -143,11 +143,11 @@ graph TD
     H -- Core Pipeline --> I[Qwen 3 8B (Core LLM)]
     H -- Agentic Pipeline --> P[DeepSeek R1 14B (Plus LLM)]
 
-    J --> K[Web Browser Agent]
-    J --> L[Code Generation Agent]
-    J --> M[Task Planning Agent]
-    J --> N[Voice I/O Agent]
-    J --> O[File Management Agent]
+    J --> K[Web Browser Agent (Plus)]
+    J --> L[Code Generation Agent (Plus)]
+    J --> M[Task Planning Agent (Plus)]
+    J --> N[Voice I/O Agent (Plus)]
+    J --> O[File Management Agent (Plus)]
 ```
 
 ### Text-To-Text Pipeline
@@ -503,17 +503,16 @@ flowchart TD
     EXIT --> SAVE_SESSION[save_session]
     SAVE_SESSION --> ASK_LLM[ASK LLM TAKE NOTE]
     
-    PREFERENCE_DB[(PREFERENCE DB)] --> ASK_LLM
-    ASK_LLM --> |Can you write note on the user preferences| LLM_PROVIDER
+    PREFERENCE_DB[(PREFERENCE DB)] -->     ASK_LLM --> |Can you write note on the user preferences| LLM_PROVIDER[DeepSeek R1 14B]
     
     LLM_REQUEST --> LLM_ROUTER[LLM ROUTER]
     LLM_ROUTER --> CODE_AGENT[CODE AGENT]
     LLM_ROUTER --> CASUAL_AGENT[CASUAL AGENT]
     LLM_ROUTER --> WEB_AGENT[WEB AGENT]
     
-    CODE_AGENT --> LLM_PROVIDER[LLM PROVIDER]
-    CASUAL_AGENT --> LLM_PROVIDER
-    WEB_AGENT --> LLM_PROVIDER
+    CODE_AGENT --> LLM_PROVIDER[DeepSeek R1 14B]
+    CASUAL_AGENT --> LLM_PROVIDER[DeepSeek R1 14B]
+    WEB_AGENT --> LLM_PROVIDER[DeepSeek R1 14B]
     
     PREFERENCES --> LLM_ROUTER
 ```
@@ -542,7 +541,7 @@ flowchart TD
     end
     
     COMPLEX_PATH --> SIMPLE_PATH
-    SIMPLE_PATH --> LLM[LLM Provider]
+    SIMPLE_PATH --> LLM[DeepSeek R1 14B]
 ```
 
 ### Autonomous Web Search Process
@@ -554,7 +553,7 @@ sequenceDiagram
     participant User
     participant System
     participant WebSearchTool
-    participant LLM
+    participant LLM as "LLM (DeepSeek R1 14B)"
     participant Browser
     
     rect rgb(240, 255, 240)
@@ -602,7 +601,7 @@ The code agent handles code generation, execution, and debugging:
 
 ```mermaid
 sequenceDiagram
-    participant AI
+    participant AI as "AI (DeepSeek R1 14B)"
     participant CodeInterpreter as "Code Interpreter"
     
     AI->>CodeInterpreter: Submit code for execution
