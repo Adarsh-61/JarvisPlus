@@ -42,8 +42,8 @@ os.environ["PYTHONWARNINGS"] = "ignore::RuntimeWarning,ignore::DeprecationWarnin
 # CONSTANTS & CONFIG
 # ======================
 EMBEDDING_MODEL = "BAAI/bge-m3"
-OLLAMA_MODEL = "deepseek-r1:14b"
-VISION_MODEL = "gemma3:4b-it-qat"
+OLLAMA_MODEL = "qwen3:latest"
+VISION_MODEL = "qwen3:latest"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MAX_CONTEXT_LENGTH = 8192
 CHUNK_SIZE = 1024
@@ -559,7 +559,7 @@ class AIAssistant:
             st.session_state.llm = OllamaLLM(
                 model=model_name,
                 temperature=0.7,
-                num_predict=4096,
+                num_predict=8192,
                 callbacks=[st.session_state.stream_handler],
             )
             if mode != "Files-To-Text" and not st.session_state.embeddings:
@@ -591,7 +591,7 @@ class AIAssistant:
             st.session_state.llm = OllamaLLM(
                 model=model_name,
                 temperature=0.7,
-                num_predict=4096,
+                num_predict=8192,
                 callbacks=[stream_handler],
             )
             st.session_state.general_chain = None
@@ -1517,7 +1517,7 @@ This AI assistant can:
 - 🗣️ **Voice Interaction**: Supports speech-to-text and text-to-speech.
 - 🌐 **Autonomous Web Browsing**: Searches and navigates websites automatically.
 - 📂 **File System Management**: Executes bash commands for file navigation and manipulation.
-- 💻 **Code Writing & Execution**: Supports Python, C, and Golang with debugging capabilities.
+- 💻 **Code Writing & Execution**: Supports Python, C, Java and Golang with debugging capabilities.
 - 🛠️ **Self-Correction**: Detects and fixes errors in execution.
 - 📝 **Task Planning & Execution**: Uses multiple agents to plan and execute complex tasks.
 - 🔄 **Agent Routing**: Automatically selects the best agent for a given task.
