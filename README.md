@@ -1,10 +1,10 @@
-Updated: 29.4.2025 | 01:35 PM
+Updated: 29.4.2025 | 01:55 PM
 ### What's New (For Jarvis AI Core)
 - Replaced DeepSeek R1 14B and Gemma 3 4B with Qwen 3 8B
 - Improved reasoning capabilities
 - Enhanced multi-language support for over 100 languages
 
-> ⚠️ **Note:** This documentation has been created from the point of view of the Jarvis AI Core. The complete and official documentation for Jarvis+ is not ready yet and will be added later with full details. The current documentation is only for temporary use. I think it's better to create three separate files: one for Jarvis AI Core, one for Jarvis+, and one for installing both together. This will help reduce confusion and make things clearer. -->
+> ⚠️ **Note:** This documentation has been created from the point of view of the Jarvis AI Core. The complete and official documentation for Jarvis+ is not ready yet and will be added later with full details. The current documentation is only for temporary use. I think it's better to create three separate files: one for Jarvis AI Core, one for Jarvis+, and one for installing both together. This will help reduce confusion and make things clearer.
 
 # Jarvis AI Project
 
