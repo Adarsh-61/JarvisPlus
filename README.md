@@ -1,4 +1,10 @@
-<!-- WARNING: This documentation has been created from the perspective of the Jarvis AI Core. The proper and complete documentation for Jarvis+ is still pending and will be added later in detail. This current documentation is only for temporary use. -->
+Updated: 29.4.2025 | 01:10 PM
+### What's New (For Jarvis AI Core)
+- Replaced DeepSeek R1 14B and Gemma 3 4B with Qwen 3 8B
+- Improved reasoning capabilities
+- Enhanced multi-language support for over 100 languages
+
+> ⚠️ **Note:** This documentation has been created from the point of view of the Jarvis AI Core. The complete and official documentation for Jarvis+ is not ready yet and will be added later with full details. The current documentation is only for temporary use. I think it's better to create three separate files: one for Jarvis AI Core, one for Jarvis+, and one for installing both together. This will help reduce confusion and make things clearer. -->
 
 # Jarvis AI Project
 
@@ -33,8 +39,6 @@ First of all, let's talk about the name "Jarvis." If you're a fan of the Iron Ma
 Jarvis AI is a powerful Artificial Intelligence (AI) assistant designed to work completely **offline** on your own computer. This means it doesn't need an internet connection to function (after the initial setup) and doesn't send your data to external servers, ensuring your privacy. It uses advanced AI models to understand language, process documents efficiently, browse the web autonomously, generate code, and much more.
 
 Building this has been a significant undertaking, and I want to express my sincere gratitude to everyone who supported me: the vibrant open-source community, my friends, dedicated mentors, and inspiring teachers. Your contributions and encouragement have been invaluable.
-
-> ⚠️ **WARNING:** This documentation has been created from the perspective of the Jarvis AI Core. The proper and complete documentation for Jarvis+ is still pending and will be added later in detail. This current documentation is only for temporary use.
 
 ---
 
@@ -95,7 +99,7 @@ Whether you want to chat with an AI, get help writing something, analyze documen
 **Minimum Requirements:**
 - **RAM**: 16 GB
 - **Storage**: SSD with at least 50 GB free space
-- **CPU**: Intel i3 12th Gen or equivalent
+- **CPU**: Intel i5 10th Gen or equivalent
 - **GPU**: Optional, but recommended for better performance
 
 **Recommended Specifications:**
@@ -120,25 +124,25 @@ The system is designed to be scalable and can be adjusted to work with various h
 Jarvis AI follows a modular architecture designed for efficiency and scalability. The system is built around multiple conversion pipelines, with Jarvis AI Core handling Text-To-Text and Files-To-Text, and Jarvis+ extending this with agentic capabilities.
 
 ### High-Level Architecture
-
 ```mermaid
 graph TD
-    A[Streamlit Web Interface] --> B[Text-To-Text Flow]
-    A --> C[Files-To-Text Flow]
+    A[User Interface (Streamlit)] --> B[Text-To-Text Mode (Core)]
+    A --> C[Files-To-Text Mode (Core)]
     A --> J[Jarvis+ Agentic Layer]
-    
+
     B --> D[Conversation Manager]
     C --> E[Document Processor]
-    
-    E --> F[Embedding System]
-    F --> G[Vector Storage]
-    
-    D --> H[LLM Interface Layer]
-    G --> H
-    J --> H
-    
-    H --> I[Deepseek R1 14B / Gemma 3 4B]
-    
+
+    E --> F[Embedding System (BGE M3)]
+    F --> G[Vector Storage (FAISS)]
+
+    D -- Core Task --> H[LLM Interface Layer]
+    G -- Core Task --> H
+    J -- Agentic Task --> H
+
+    H -- Core Pipeline --> I[Qwen 3 8B (Core LLM)]
+    H -- Agentic Pipeline --> P[DeepSeek R1 14B (Plus LLM)]
+
     J --> K[Web Browser Agent]
     J --> L[Code Generation Agent]
     J --> M[Task Planning Agent]
@@ -153,7 +157,7 @@ The Text-To-Text pipeline handles conversational interactions without document c
 1. **User Input**: Received through the Streamlit web interface
 2. **Conversation Manager**: Maintains history and context for coherent interactions
 3. **Prompt Formatting**: Constructs prompts with conversation context and user queries
-4. **LLM Processing**: Sends formatted prompts to Deepseek R1 14B model
+4. **LLM Processing**: Sends formatted prompts to Qwen 3 8B model
 5. **Response Streaming**: Returns generated responses in real-time to the user
 
 ### Files-To-Text Pipeline
@@ -166,7 +170,7 @@ The Files-To-Text pipeline processes documents and enables document-based intera
 4. **Vector Storage**: Indexes embeddings for efficient similarity search
 5. **Query Processing**: Retrieves relevant document chunks based on user queries
 6. **Context Building**: Combines retrieved chunks with user queries
-7. **LLM Processing**: Sends context-enriched prompts to the appropriate model
+7. **LLM Processing**: Sends context-enriched prompts to the Qwen 3 8B model 
 8. **Response Streaming**: Returns generated responses in real-time to the user
 
 ---
@@ -175,184 +179,153 @@ The Files-To-Text pipeline processes documents and enables document-based intera
 
 Jarvis AI is designed to be future-ready, allowing you to choose and use any model according to your preferences or system requirements. However, here we provide detailed information about the models used in the current implementation.
 
+### Qwen 3 8B (In Jarvis AI Core)
+
+#### Model Introduction
+
+**Simple Explanation:**
+Qwen 3 8B is a powerful and versatile AI language model developed by the Qwen team at Alibaba Cloud. As part of the Qwen3 series, it represents a significant advancement over previous versions, offering strong capabilities in understanding and generating text across a wide range of tasks. Think of it as a highly capable digital assistant that can handle complex reasoning, write code, understand multiple languages, and engage in natural conversations. It's designed to be efficient enough to run on reasonably powerful local hardware while delivering performance comparable to much larger models in many areas, making sophisticated AI accessible without relying solely on cloud services.
+
+**Technical Explanation:**
+Qwen3-8B is a dense, decoder-only causal language model with 8.2 billion parameters (6.95 billion non-embedding parameters). It belongs to the Qwen3 family, which features improvements in training data, model architecture, and optimization techniques compared to the earlier Qwen2.5 series. Key advancements include pre-training on a vastly expanded and higher-quality corpus of approximately 36 trillion tokens spanning 119 languages, incorporating architectural refinements like qk layernorm, and utilizing a three-stage pre-training process focused on general knowledge, reasoning enhancement, and long-context capability. The model is released under the Apache 2.0 license, promoting open access and development. Notably, the post-trained/instruct version, typically accessed via commands like `ollama run qwen3`, supports a context length of 32,768 natively and 131,072 tokens with YaRN.
+
+#### Working Mechanism
+
+Qwen3-8B processes input text using a transformer-based architecture. Text is tokenized and fed through 36 transformer layers. It employs Grouped-Query Attention (GQA) with 32 attention heads for queries (Q) and 8 heads for keys/values (KV) to balance performance and computational efficiency. The architecture incorporates qk layernorm for improved stability and performance. The model was trained using a three-stage pre-training strategy:
+1.  **Stage 1 (S1):** Focused on broad language modeling and general knowledge acquisition using over 30 trillion tokens with a 4K context length.
+2.  **Stage 2 (S2):** Enhanced reasoning skills by increasing the proportion of knowledge-intensive data (STEM, coding, reasoning) and training on an additional 5 trillion tokens.
+3.  **Stage 3 (S3):** Extended context handling capabilities up to 32K tokens using high-quality long-context data. The instruct-tuned version further extends this to 131,072 tokens.
+
+Post-training involved a four-stage pipeline including long chain-of-thought (CoT) cold start, reasoning-based reinforcement learning (RL), thinking mode fusion, and general capability alignment to develop its hybrid thinking modes and enhance instruction following.
+
+#### Technologies Used
+
+Qwen3-8B leverages several advanced technologies:
+
+*   **Architecture:** Decoder-only Transformer, Grouped-Query Attention (GQA), qk Layernorm.
+*   **Training Techniques:** Three-stage pre-training, Scaling Law guided hyperparameter tuning, advanced post-training pipeline (RL, SFT).
+*   **Frameworks/Tools (Inference):** Designed for use with Hugging Face Transformers (`>=4.51.0`), vLLM, SGLang, Ollama (`>=0.6.6`), LMStudio, MLX, llama.cpp (`>=b5092`), KTransformers.
+*   **License:** Apache 2.0.
+
+*(Note: Specific details on activation functions, optimization algorithms, and loss functions beyond the architectural elements mentioned in the sources (like qk layernorm) were not readily available in the reviewed documentation but likely involve standard practices like AdamW optimizer and cross-entropy loss, potentially augmented with techniques used in the RL stages.)*
+
+#### Benchmarks and Performance Metrics
+
+According to the official Qwen blog and related materials, Qwen3 models demonstrate strong performance across various benchmarks. Qwen3-8B (specifically the base model) is reported to achieve performance comparable to the previous generation Qwen2.5-14B-Base model, with particular improvements noted in STEM, coding, and reasoning tasks. The instruct-tuned Qwen3-8B model shows significantly enhanced reasoning capabilities and superior human preference alignment compared to previous Qwen models.
+
+Key performance highlights include:
+*   Strong multilingual capabilities across 119 languages.
+*   Enhanced reasoning, math, and coding abilities.
+*   Improved performance on agentic tasks and tool use (MCP).
+*   Competitive results compared to other models in its size class.
+
+For detailed, up-to-date benchmark scores across specific tests (like MMLU, HumanEval, MATH, etc.), users are encouraged to consult the official Qwen3 blog post and documentation linked in the sources.
+
+#### Capabilities and Limitations
+
+**Key Strengths:**
+*   **Strong Reasoning and Coding:** Significantly improved performance in logical reasoning, mathematical problem-solving, and code generation.
+*   **Extensive Multilingual Support:** Understands and generates text in 119 languages and dialects.
+*   **Long Context Window:** Supports up to 128K tokens (instruct version), enabling processing of very long documents or conversations.
+*   **Hybrid Thinking Modes:** Offers flexibility between step-by-step reasoning (`/think` or default) for complex tasks and faster responses (`/nothink`) for simpler queries.
+*   **Agentic Capabilities:** Optimized for interacting with external tools and performing complex agent-based tasks.
+*   **Efficiency:** Achieves performance comparable to larger previous-generation models while being more parameter-efficient.
+*   **Open Source:** Released under the permissive Apache 2.0 license.
+
+**Limitations:**
+*   As an 8B parameter model, it may still underperform significantly larger models (e.g., 70B+ or MoE models) on extremely complex or nuanced tasks.
+*   Like all LLMs, it can potentially generate factually incorrect or biased information (hallucinations).
+*   Knowledge is limited to the data it was trained on (cutoff date applies).
+*   Optimal performance, especially for the 128K context, requires sufficient hardware resources (RAM and potentially VRAM).
+*   Performance can vary across the 119 supported languages, likely being strongest in higher-resource languages present in the training data.
+
+#### Usage with Ollama
+
+To run the Qwen 3 8B model locally using Ollama (version 0.6.6 or higher required), use the following command after ensuring the Ollama service is running:
+
+```bash
+ollama run qwen3
+```
+
+#### Role in Jarvis AI Core
+
+Within the **Jarvis AI Core** component, Qwen 3 8B serves as the primary language model. It handles the core functionalities: the **Text-To-Text** conversion pipeline (general conversation, question answering, content generation) and the **Files-To-Text** pipeline (document analysis, summarization, Q&A over documents). Its strong reasoning, extensive multilingual support, and long context window enable Jarvis AI Core to tackle these tasks effectively on local hardware. *Note: For the advanced agentic capabilities provided by **Jarvis+** (such as web browsing, code generation, and task planning), the DeepSeek R1 14B model is utilized instead (see its dedicated section).*
+
+---
+*Sources: [Qwen3 Blog](https://qwenlm.github.io/blog/qwen3/), [Qwen3 GitHub](https://github.com/QwenLM/Qwen3), [Qwen3-8B-Base Hugging Face](https://huggingface.co/Qwen/Qwen3-8B-Base)*
+
 ### DeepSeek R1 14B
 
-#### Model Introduction
-
-**Simple Explanation:**
-DeepSeek R1 14B is an advanced AI language model specifically designed to excel at reasoning tasks. Unlike traditional language models that simply generate text, DeepSeek R1 14B can show its step-by-step thinking process, making it particularly valuable for tasks requiring logical inference, mathematical problem-solving, and complex decision-making. Think of it as an AI that doesn't just give you answers but explains how it arrived at those answers, similar to how a human might work through a challenging problem by breaking it down into logical steps.
-
-**Technical Explanation:**
-DeepSeek R1 14B is a distilled version of the larger DeepSeek R1 model, based on the Qwen2.5 architecture with 14 billion parameters. It's a decoder-only transformer model that was trained using a novel approach combining reinforcement learning (RL) with supervised fine-tuning (SFT). What makes DeepSeek R1 unique is that it was trained to incentivize reasoning capabilities directly through reinforcement learning, rather than relying solely on supervised learning from human demonstrations. The model demonstrates remarkable chain-of-thought (CoT) reasoning abilities, self-verification mechanisms, and reflection capabilities that emerged naturally during its RL training process.
-
-#### Working Mechanism
-
-DeepSeek R1 14B processes input data through a standard transformer decoder architecture. Text is tokenized using a specialized tokenizer with a vocabulary size of 256K tokens, and token embeddings are passed through the model's layers. For each token, the model computes attention across previous tokens in the sequence. The model has a context window of 32,768 tokens, allowing it to process lengthy inputs.
-
-The model is based on the Qwen2.5 architecture and features 14 billion parameters in total with a decoder-only transformer architecture. It uses multiple transformer layers with self-attention mechanisms, Grouped-Query Attention (GQA) for efficient processing, RMSNorm for layer normalization, Rotary Positional Embedding (RoPE) for handling positional information, and SwiGLU activation functions in the feed-forward networks.
-
-DeepSeek R1 14B was trained through a multi-stage process:
-1. Started with the Qwen2.5 14B model as the foundation
-2. Knowledge was distilled from the larger DeepSeek R1 model (which has 671B total parameters with 37B activated parameters in a Mixture-of-Experts architecture)
-3. The training pipeline incorporated cold-start data to seed the model's reasoning and non-reasoning capabilities, two RL stages to discover improved reasoning patterns and align with human preferences, and two SFT stages to enhance both reasoning and general capabilities.
-
-#### Technologies Used
-
-DeepSeek R1 14B employs several key technologies:
-
-**Activation Functions:**
-- SwiGLU for better gradient flow in feed-forward networks
-- Softmax in attention mechanisms
-- ReLU for introducing non-linearity in various components
-
-**Optimization Algorithms:**
-- AdamW optimizer with weight decay for regularization
-- Reinforcement Learning from Human Feedback (RLHF)
-- Proximal Policy Optimization (PPO)
-
-**Loss Functions:**
-- Cross-Entropy Loss during supervised fine-tuning
-- KL-Divergence to prevent deviation from reference models
-- Custom reward functions for incentivizing reasoning
-
-**Frameworks/Tools:**
-- PyTorch as the primary deep learning framework
-- Hugging Face Transformers library
-- CUDA for GPU acceleration
-- DeepSpeed for distributed training
-- Ollama for local deployment
-
-#### Benchmarks and Performance Metrics
-
-DeepSeek R1 14B demonstrates exceptional performance across various benchmarks:
-
-- **MMLU (Pass@1)**: 90.8% (massive multitask language understanding)
-- **MMLU-Redux (EM)**: 92.9% (exact match accuracy)
-- **MMLU-Pro (EM)**: 84.0% (more challenging version of MMLU)
-- **AIME 2024 (Pass@1)**: 79.8% (American Invitational Mathematics Examination)
-- **MATH-500 (Pass@1)**: 97.3% (challenging mathematical problems)
-- **CNMO 2024 (Pass@1)**: 78.8% (Chinese National Mathematical Olympiad)
-- **LiveCodeBench (Pass@1-COT)**: 65.9% (coding benchmark with chain-of-thought)
-- **Codeforces (Rating)**: 2029 (competitive programming platform)
-- **ArenaHard (GPT-4-1106)**: 92.3% (challenging reasoning tasks)
-
-DeepSeek R1 14B outperforms many larger models on reasoning tasks, surpassing GPT-4o (87.2%) and Claude-3.5-Sonnet (88.3%) on MMLU, exceeding OpenAI o1-mini performance on many mathematical reasoning tasks, and achieving comparable performance to OpenAI o1-1217 on several benchmarks despite being much smaller.
-
-In terms of efficiency, it achieves an inference speed of approximately 30 tokens/second on consumer GPUs with 16GB VRAM, can run on consumer hardware with 16GB VRAM, and supports 4-bit and 8-bit quantization for deployment on lower-end hardware.
-
-#### Capabilities and Limitations
-
-**Key Strengths:**
-- Exceptional mathematical reasoning with outstanding performance on mathematical problems
-- Strong coding abilities across multiple programming languages
-- Natural step-by-step reasoning without explicit prompting
-- Self-verification capabilities to check work and correct mistakes
-- Long context processing with a 32K token context window
-- Strong multilingual support, especially in English and Chinese
-
-**Limitations:**
-- Can occasionally generate plausible-sounding but incorrect information
-- Requires significant computational resources compared to smaller models
-- Knowledge is limited to the training data cutoff date
-- Less impressive at creative writing tasks compared to reasoning tasks
-- Text-only model without native image or audio processing capabilities
-- May have gaps in highly specialized domains
-
-#### Role in Jarvis AI Core
-
-In Jarvis AI Core, DeepSeek R1 14B serves as the primary language model for the Text-To-Text conversion pipeline. Its exceptional reasoning capabilities make it ideal for providing accurate and well-explained responses to user queries. The model's ability to show step-by-step thinking is particularly valuable for educational use cases and complex problem-solving scenarios.
-
-DeepSeek R1 14B was selected for this role because it offers near-frontier model performance while still being deployable on consumer hardware. Its fully open-source license allows for unrestricted use and modification, and it can run completely locally, aligning with Jarvis AI Core's privacy-focused design. The model's strength in reasoning tasks makes it ideal for understanding and generating coherent, logical responses in conversational interactions.
-
-### Gemma 3 4B
+*(Note: This section describes the DeepSeek R1 14B model, which is utilized for the advanced agentic capabilities within Jarvis+.)*
 
 #### Model Introduction
 
 **Simple Explanation:**
-Gemma 3 4B is a lightweight, multimodal AI model that can understand both text and images. Think of it as a compact but powerful AI assistant that can process what you write and what you show it, then respond with helpful information. Despite its relatively small size, it can handle complex tasks like answering questions about documents, analyzing images, solving math problems, and generating code. It's designed to run efficiently on consumer hardware like laptops and desktops, making advanced AI capabilities accessible to everyday users without requiring expensive specialized equipment.
+DeepSeek R1 14B is an advanced AI language model specifically designed to excel at reasoning tasks. Unlike models primarily focused on general text generation, DeepSeek R1 14B can demonstrate its step-by-step thinking process, making it particularly valuable for complex tasks requiring logical inference, mathematical problem-solving, planning, and interaction with tools (agentic behavior). Think of it as an AI that doesn't just give answers but explains *how* it arrived at them, crucial for the sophisticated operations performed by Jarvis+.
 
 **Technical Explanation:**
-Gemma 3 4B is a decoder-only transformer model with 4 billion parameters, developed by Google DeepMind as part of the Gemma family of open models. It's built on the same research and technology used to create the larger Gemini models. Gemma 3 represents a significant advancement over previous versions by adding multimodal capabilities through integration with a SigLIP vision encoder, extending the context window to 128K tokens, and enhancing multilingual support to over 140 languages. The model uses a hybrid architecture that interleaves local and global attention layers in a 5:1 ratio to efficiently handle long contexts while minimizing memory requirements.
+DeepSeek R1 14B (specifically, DeepSeek-R1-Distill-Qwen-14B) is a 14 billion parameter dense, decoder-only transformer model. It is a distilled version derived from the larger, more complex DeepSeek-R1 model, using the Qwen2.5 14B architecture as a base. Its unique strength comes from being trained using a novel approach that heavily emphasizes reinforcement learning (RL) to directly incentivize reasoning capabilities, rather than relying solely on supervised fine-tuning (SFT) from human examples. This RL-centric training allows emergent capabilities like chain-of-thought (CoT) reasoning, self-verification, and reflection, which are vital for agentic tasks.
 
 #### Working Mechanism
 
-Gemma 3 4B processes input data through a sophisticated pipeline that handles both text and images. For text processing, input is tokenized using a specialized tokenizer with a vocabulary of 256K entries, embedded into a continuous vector space, and encoded with positional information using Rotary Position Embeddings (RoPE). For image processing, images are processed through a 400M parameter variant of the SigLIP vision encoder, resized to 896 x 896 resolution, and converted into 256 token embeddings. For non-square images, a Pan & Scan algorithm adaptively segments the image during inference.
+DeepSeek R1 14B processes input through a transformer decoder architecture based on Qwen2.5. Key architectural features include:
+*   **Parameters:** ~14 billion.
+*   **Attention:** Grouped-Query Attention (GQA) for efficiency.
+*   **Normalization:** RMSNorm.
+*   **Positional Embedding:** Rotary Positional Embedding (RoPE).
+*   **Activation:** SwiGLU in feed-forward networks.
+*   **Context Window:** 32,768 tokens.
 
-The model features a decoder-only transformer architecture that interleaves local and global attention layers in a 5:1 ratio. Local layers use sliding window self-attention with a span of 1024 tokens, while global layers attend to the entire context. The model uses Grouped-Query Attention (GQA) for efficiency, implements QK-norm instead of soft-capping used in previous versions, and employs both pre-norm and post-norm with RMSNorm.
-
-Gemma 3 4B underwent a comprehensive training process, including pre-training on 4 trillion tokens of diverse text data with knowledge distillation from larger models, instruction tuning on carefully curated datasets, and multimodal training on text-image pairs to enable multimodal understanding.
+The model's distinct reasoning ability stems from its training pipeline, which involved:
+1.  Starting with a base model (Qwen2.5 14B).
+2.  Distilling knowledge and reasoning patterns from the larger DeepSeek-R1 model (a 671B MoE model).
+3.  Fine-tuning using samples curated with DeepSeek-R1, likely involving RL stages focused on reasoning and human preference alignment, potentially seeded with SFT data.
 
 #### Technologies Used
 
-Gemma 3 4B employs several key technologies:
+DeepSeek R1 14B leverages several key technologies:
 
-**Activation Functions:**
-- SwiGLU in feed-forward networks
-- RMSNorm for layer normalization
-- Softmax in attention mechanisms
-- GELU for non-linear transformations
+*   **Architecture:** Qwen2.5-based Transformer, GQA, RMSNorm, RoPE, SwiGLU.
+*   **Training Techniques:** Knowledge Distillation, Reinforcement Learning (likely PPO or similar), potentially SFT.
+*   **Frameworks/Tools (Inference):** Hugging Face Transformers, PyTorch, Ollama, CUDA.
+*   **License:** MIT License (based on the distilled version's Hugging Face page).
 
-**Optimization Algorithms:**
-- AdamW optimizer with weight decay
-- Distributed optimization across TPU pods
-- Gradient accumulation to increase batch size
-- Mixed precision training
-
-**Loss Functions:**
-- Cross-Entropy Loss for next-token prediction
-- Knowledge Distillation Loss
-- Contrastive Loss in vision encoder training
-- Specialized multimodal losses
-
-**Frameworks/Tools:**
-- JAX/Flax as primary frameworks
-- TensorFlow for data preprocessing
-- PyTorch for inference and deployment
-- TPU hardware for training
-- ONNX for cross-platform deployment
-- Hugging Face Transformers library
+*(Note: Specific details on optimization algorithms and loss functions beyond the general RL/distillation approach were not fully detailed in the reviewed sources but likely include standard practices like AdamW and cross-entropy, augmented with RL-specific objectives.)*
 
 #### Benchmarks and Performance Metrics
 
-Gemma 3 4B demonstrates impressive performance across various benchmarks:
+DeepSeek R1 14B (Distill-Qwen-14B) demonstrates strong performance, particularly in reasoning, math, and coding benchmarks, often outperforming models of similar or even larger sizes in these specific areas:
 
-- **MMLU-Pro**: 54.2% (test of multitask language understanding)
-- **GPQA-Diamond**: 42.4% (graduate-level question answering)
-- **MATH**: 89.0% (mathematical problem-solving)
-- **ArenaHard**: 75.6% (challenging reasoning tasks)
-- **HumanEval**: 67.1% (code generation benchmark)
-- **MGSM**: 78.3% (multilingual grade school math problems)
-- **BELEBELE**: 68.7% (multilingual language understanding)
-- **CMMLU**: 64.5% (Chinese multitask language understanding)
+*   **AIME 2024 (Pass@1):** 69.7%
+*   **MATH-500 (Pass@1):** 93.9%
+*   **GPQA Diamond (Pass@1):** 59.1%
+*   **LiveCodeBench (Pass@1-COT):** 53.1%
+*   **Codeforces (Rating):** 1481
 
-Gemma 3 4B outperforms previous Gemma 2 models of similar size across most benchmarks, is competitive with models 2-3x its size on many tasks, and is comparable to Gemma 2 27B on several benchmarks despite being 7x smaller.
-
-In terms of efficiency, it achieves an inference speed of approximately 30-40 tokens/second on consumer GPUs, can run on devices with 8GB+ RAM, efficiently processes up to 128K tokens, and is compatible with 4-bit and 8-bit quantization for deployment on lower-end hardware.
+It significantly outperforms models like GPT-4o and Claude-3.5-Sonnet on mathematical reasoning (AIME, MATH-500) and is competitive with OpenAI's o1-mini on coding and reasoning tasks, despite being a dense 14B model.
 
 #### Capabilities and Limitations
 
 **Key Strengths:**
-- Multimodal understanding of both text and images
-- Long context window (128K tokens) for processing lengthy documents
-- Support for over 140 languages
-- Efficient operation on consumer hardware
-- Strong mathematical reasoning capabilities
-- Code generation in multiple programming languages
-- Open weights for research, fine-tuning, and commercial use
+*   **Exceptional Reasoning:** Excels at tasks requiring step-by-step logical deduction, mathematical problem-solving, and planning.
+*   **Strong Coding Abilities:** High performance on coding benchmarks.
+*   **Emergent Behaviors:** Demonstrates capabilities like self-verification and reflection learned through RL.
+*   **Good Context Length:** 32K token context window.
+*   **Open Source (Distilled Version):** Available under an MIT license.
 
 **Limitations:**
-- As a 4B parameter model, it underperforms larger models on complex reasoning tasks
-- Limited to static images with fixed resolution requirements
-- Can sometimes generate plausible-sounding but incorrect information
-- Knowledge is limited to the training data cutoff date
-- May struggle with highly specialized domain knowledge
-- Less sophisticated reasoning capabilities compared to larger models
+*   May be less performant on general knowledge or creative writing compared to models trained more broadly.
+*   Reasoning, while strong, can still be flawed or produce plausible but incorrect steps.
+*   Knowledge cutoff date applies.
+*   Requires significant VRAM (likely 16GB+) for efficient local operation.
 
-#### Role in Jarvis AI Core
+#### Role in Jarvis+
 
-In Jarvis AI Core, Gemma 3 4B serves as a complementary model for the Files-To-Text conversion pipeline. Its multimodal capabilities and long context window make it particularly valuable for processing documents that contain both text and images, while its efficiency allows it to run on more modest hardware configurations.
+Within the Jarvis+ system, DeepSeek R1 14B serves as the primary language model for handling **advanced agentic tasks**. Its strong reasoning and coding capabilities make it ideal for the Web Browser Agent, Code Generation Agent, Task Planning Agent, and potentially other complex workflows that require multi-step thinking, interaction with tools, or logical deduction. It is specifically chosen for Jarvis+ due to its demonstrated strengths in these reasoning-intensive areas, complementing the Qwen 3 8B model used for the core text and file processing in Jarvis AI Core.
 
-Gemma 3 4B was selected for this role because it provides an excellent balance of capabilities, efficiency, and accessibility. Its multimodal nature allows it to process both text and images in documents, its long context window (128K tokens) is beneficial for processing lengthy documents, and its multilingual capabilities ensure effective document understanding across different languages. The model's hardware compatibility aligns with Jarvis AI Core's goal of operating completely offline on users' machines, and its open-source nature enables customization for specific needs.
+---
+*Sources: [DeepSeek-R1-Distill-Qwen-14B Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B), [DeepSeek R1 Paper (arXiv:2501.12948)]()*
+
 
 ### BGE M3
 
@@ -490,12 +463,12 @@ The system uses FAISS (Facebook AI Similarity Search) for efficient vector stora
 
 ### LLM Integration
 
-Jarvis AI Core integrates powerful language models for text generation and understanding:
+Jarvis AI integrates powerful language models for text generation and understanding, utilizing specific models for different components:
 
-- **Deepseek R1 14B**: Primary language model for text processing
-- **Gemma 3 4B**: Vision-language model for Files-To-Text functionality
-- **Streaming Interface**: Provides real-time response generation
-- **Context Management**: Effectively handles conversation history and document context
+- **Qwen 3 8B (Jarvis AI Core)**: Serves as the core language model for the Text-To-Text and Files-To-Text pipelines, handling general conversation, document analysis, and Q&A.
+- **DeepSeek R1 14B (Jarvis+)**: Utilized for advanced agentic tasks within Jarvis+, leveraging its strong reasoning capabilities for web browsing, code generation, and planning.
+- **Streaming Interface**: Provides real-time response generation for both models.
+- **Context Management**: Effectively handles conversation history and document context, routing tasks to the appropriate model via the LLM Interface Layer.
 
 ### User Interface
 
@@ -695,9 +668,14 @@ pip install -r requirements.txt
 
 ### Step 5: Download Required Models
 
+Download the necessary language models using Ollama. Both models are required:
+
 ```bash
+# Model for Jarvis AI Core (Text/File processing)
+ollama pull qwen3
+
+# Model for Jarvis+ (Agentic features)
 ollama pull deepseek-r1:14b
-ollama pull gemma3:4b-it-qat
 ```
 
 ### Step 6: Launch Services
@@ -726,7 +704,7 @@ python api.py
 
 ## Configuration For Jarvis+
 
-Jarvis+ can be configured through the `config.ini` file in the project root directory.
+Jarvis+ can be configured through the `config.ini` file in the project root directory. The application internally routes tasks to the appropriate model based on the context.
 
 ### Main Configuration
 
@@ -734,7 +712,7 @@ Jarvis+ can be configured through the `config.ini` file in the project root dire
 [MAIN]
 is_local = True
 provider_name = ollama
-provider_model = deepseek-r1:14b
+provider_model = deepseek-r1:14b 
 provider_server_address = 127.0.0.1:11434
 agent_name = Edith
 recover_last_session = False
@@ -887,8 +865,7 @@ Use these to explore Jarvis+ :
 If you encounter issues not covered here:
 
 1. Check the GitHub repository issues section
-2. Join the community Discord server
-3. Post detailed problem descriptions including:
+2. Post detailed problem descriptions including:
    - System specifications
    - Error messages
    - Steps to reproduce the issue
