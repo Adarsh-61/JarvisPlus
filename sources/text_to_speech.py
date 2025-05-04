@@ -70,12 +70,25 @@ class Speech():
         sentence = self.clean_sentence(sentence)
         audio_file = f"{self.voice_folder}/sample_{self.voice_map[self.language][voice_idx]}.wav"
         self.voice = self.voice_map[self.language][voice_idx]
+
+        # Tokenize and prepare inputs
         inputs = self.tokenizer(sentence, return_tensors="pt")
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
+
+        # Ensure indices are integer type for embedding
+        if 'input_ids' in inputs:
+            inputs['input_ids'] = inputs['input_ids'].long()
+        if 'attention_mask' in inputs:
+            inputs['attention_mask'] = inputs['attention_mask'].long()
+
+        # Generate waveform
         with torch.no_grad():
             output = self.model(**inputs).waveform
+
         sampling_rate = self.model.config.sampling_rate
         scipy.io.wavfile.write(audio_file, rate=sampling_rate, data=output.squeeze().cpu().numpy())
+
+        # Play audio depending on platform
         if platform.system().lower() == "windows":
             import winsound
             winsound.PlaySound(audio_file, winsound.SND_FILENAME)
@@ -83,6 +96,8 @@ class Speech():
             subprocess.call(["afplay", audio_file])
         else:  # linux or other.
             subprocess.call(["aplay", audio_file])
+
+        # If running in notebook, display audio widget
         if 'ipykernel' in modules:
             display(Audio(data=output.squeeze().cpu().numpy(), rate=sampling_rate, autoplay=True))
 
