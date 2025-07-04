@@ -1,3 +1,16 @@
+(Latest) Updated: 4.7.2025 | 10:40 AM
+### 📖 Detailed Documentation (Powered by DeepWiki)
+
+A big thanks to [DeepWiki](https://deepwiki.com) for generating detailed, AI-powered documentation for this project.  
+You can explore the full documentation of this repository here:
+
+🔗 [View JarvisPlus Documentation on DeepWiki](https://deepwiki.com/Adarsh-61/JarvisPlus/1-overview)
+
+If you find anything unclear, you can also use DeepWiki's *AI Assistant* or *Deep Research* features for instant answers related to this repository.
+
+---
+---
+
 Updated: 29.4.2025 | 01:55 PM
 ### What's New (For Jarvis AI Core)
 - Replaced DeepSeek R1 14B and Gemma 3 4B with Qwen 3 8B
@@ -5,6 +18,9 @@ Updated: 29.4.2025 | 01:55 PM
 - Enhanced multi-language support for over 100 languages
 
 > ⚠️ **Note:** This documentation has been created from the point of view of the Jarvis AI Core. The complete and official documentation for Jarvis+ is not ready yet and will be added later with full details. The current documentation is only for temporary use. I think it's better to create three separate files: one for Jarvis AI Core, one for Jarvis+, and one for installing both together. This will help reduce confusion and make things clearer.
+
+---
+---
 
 # Jarvis AI Project
 
